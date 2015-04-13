@@ -1,0 +1,109 @@
+package com.network;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import android.content.Context;
+import android.os.AsyncTask;
+
+import com.callback.CreditCallback;
+import com.chetu.retailerapp.R;
+import com.common.ParentActivity;
+import com.common.Utilities;
+
+public class CreditAsyncTask extends AsyncTask<Void, Void, JSONObject> {
+
+	private String url;
+	private Context context;
+	private JSONObject responseObject;
+	private ParentActivity baseClass;
+	private CreditCallback callback;
+	ArrayList<HashMap<String, String>> array_gas_info = new ArrayList<HashMap<String, String>>();
+	HashMap<String, String> hashMap;
+	private Utilities utilities;
+
+	public CreditAsyncTask(CreditCallback _callback, Context _context,
+			String _url) {
+		this.url = _url;
+		this.callback = _callback;
+		this.context = _context;
+		baseClass = new ParentActivity();
+		utilities = new Utilities(context);
+	}
+
+	@Override
+	protected void onPreExecute() {
+		super.onPreExecute();
+		utilities.showProgressDialog();
+	}
+
+	@Override
+	protected JSONObject doInBackground(Void... params) {
+		responseObject = new HttpRequest().getHttpPostResponse(url);
+		return responseObject;
+	}
+
+	@Override
+	protected void onPostExecute(JSONObject result) {
+		super.onPostExecute(result);
+		utilities.dissmissProgressDialog();
+		Boolean status = null;
+		JSONArray jsonArrayResponse = null;
+		String errorCode = null;
+		String errorDesc = null;
+		try {
+			if (responseObject != null) {
+				status = responseObject.optBoolean("status");
+				if (status) {
+					jsonArrayResponse = responseObject.getJSONArray("result");
+					if (jsonArrayResponse.length() != 0) {
+						for (int i = 0; i < jsonArrayResponse.length(); i++) {
+							String gas_id = jsonArrayResponse.getJSONObject(i)
+									.getString("gasId");
+							String gase_grade = jsonArrayResponse
+									.getJSONObject(i).getString("gasGrade");
+							String gase_name = jsonArrayResponse.getJSONObject(
+									i).getString("gasName");
+							hashMap = new HashMap<String, String>();
+							hashMap.put("gas_id", gas_id);
+							hashMap.put("gas_name", gase_name);
+							hashMap.put("gas_grade", gase_grade);
+							array_gas_info.add(hashMap);
+						}
+						callback.onTaskCompleted(array_gas_info);
+
+					}
+
+				} else {
+					errorCode = new String(
+							(String) responseObject.get("errorCode"));
+					errorDesc = new String(
+							(String) responseObject.get("errorDesc"));
+					baseClass.onErrorRecieved(context, errorCode, errorDesc);
+				}
+			} else {
+				baseClass.onErrorRecieved(context, context.getResources()
+						.getString(R.string.servr_err), "Server Error");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			baseClass.onErrorRecieved(context, context.getResources()
+					.getString(R.string.servr_err), "Server Error");
+		} finally
+
+		{
+			errorCode = null;
+			errorDesc = null;
+
+			responseObject = null;
+			jsonArrayResponse = null;
+			status = null;
+			System.gc();
+
+		}
+	}
+
+}
