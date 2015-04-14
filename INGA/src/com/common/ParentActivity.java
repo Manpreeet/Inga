@@ -15,6 +15,10 @@ public class ParentActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
 	}
+	public ParentActivity() {
+		activity = this;
+
+	}
 
 	@Override
 	protected void onStart() {
