@@ -1,0 +1,82 @@
+package com.tp.inga;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+import com.common.ParentActivity;
+import com.common.Utilities;
+import com.network.RegisterationAsyncTask;
+
+public class RegistrationActivity extends ParentActivity {
+	EditText edt_name, edt_email, edt_pasasword, edt_firstname, edt_lastname;
+	Button btn_submit;
+	ParentActivity parentActivity;
+	Utilities utilities;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_register);
+		findId();
+	}
+
+	private void findId() {
+		edt_name = (EditText) findViewById(R.id.edt_username);
+		edt_firstname = (EditText) findViewById(R.id.edt_first_name);
+		edt_lastname = (EditText) findViewById(R.id.edt_last_name);
+		edt_pasasword = (EditText) findViewById(R.id.edt_password);
+		edt_email = (EditText) findViewById(R.id.edt_email);
+		btn_submit = (Button) findViewById(R.id.btn_submit);
+		
+		utilities = new Utilities();
+		parentActivity = this;
+	}	
+
+	@Override
+	public void onBackPressed() {
+
+		super.onBackPressed();
+	}
+
+	
+	/**author-:Manpreet Singh
+	 * date-:14-4-15
+	 * return-:void
+	 * description-:method call on click submit button **/
+	public void submitRequest(View view) {
+		String url = getResources().getString(R.string.url)
+				+ "app_userregistration";
+		new RegisterationAsyncTask(RegistrationActivity.this, parentActivity,
+				url, edt_email.getText().toString(), edt_name.getText()
+						.toString(), edt_pasasword.getText().toString(),
+				edt_firstname.getText().toString(), edt_lastname.getText()
+						.toString(), "11234123123123121").execute();
+
+	}
+	/**author-:Manpreet Singh
+	 * date-:14-4-15
+	 * return-:void
+	 * description-:method call when get response from server **/
+	@Override
+	public void onResponseRecieve(String msg) {
+
+		super.onResponseRecieve(msg);
+		Utilities.showToast(RegistrationActivity.this, msg);
+
+	}
+	/**author-:Manpreet Singh
+	 * date-:14-4-15
+	 * return-:void
+	 * description-:method call when get error in response **/
+	@Override
+	public void onErrorRecieve(String msg) {
+
+		super.onErrorRecieve(msg);
+		Utilities.showToast(RegistrationActivity.this, msg);
+
+	}
+
+}
