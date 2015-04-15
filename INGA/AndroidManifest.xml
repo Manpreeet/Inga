@@ -43,15 +43,22 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".SplashActivity"
+            android:name="com.tp.inga.SplashActivity"
             android:label="@string/app_name" >
-            <intent-filter>
+             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            
         </activity>
         <activity android:name="com.tp.inga.HomeActivity" >
+        </activity>
+         <activity android:name="com.tp.inga.LoginActivity" >
+            
+        </activity>
+         <activity android:name="com.tp.inga.RegistrationActivity" >
+            
         </activity>
         <activity android:name="com.tp.inga.Add_TextNotes" >
         </activity>
